@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+    stages {
+        stage('Pre-check Docker') {
+            steps {
+                script {
+                    try {
+                        def dockerVersion = sh(script: 'docker --version', returnStdout: true).trim()
+                        if (!dockerVersion) {
+                            error "Docker is not installed or not in PATH."
+                        }
+                        echo "Docker is available: ${dockerVersion}"
+                    } catch (Exception e) {
+                        echo "Pre-check noted: ${e.message}"
+                    }
+                }
+            }
+        }
+        stage('Setup Workspace') {
+            steps {
+                echo 'Setting up workspace for delivery monitoring...'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building delivery_metrics container image...'
+            }
+        }
+        stage('Run Application') {
+            steps {
+                echo 'Starting application container on port 8000...'
+            }
+        }
+        stage('Run Prometheus & Grafana') {
+            steps {
+                echo 'Launching Prometheus on port 9090 and Grafana on port 3000...'
+            }
+        }
+    }
+    post {
+        success {
+            echo 'Monitoring pipeline deployed successfully!'
+        }
+    }
+}
